@@ -17,19 +17,27 @@ async function run(){
     try{
         await client.connect();
         const serviceCollection = client.db("warehouse").collection("warehouseService");
-        // Get user from database(MongoDb)
+        // Get inventory from database(MongoDb)
         app.get('/inventory', async(req, res)=>{
             const query = {};
             const cursor = serviceCollection.find(query);
             const users = await cursor.toArray();
             res.send(users);
         })
-        // Get single service data
+
+        // Get single inventory data
         app.get('/inventory/:id', async(req, res)=>{
             const id = req.params.id;
             const query = {_id: ObjectId(id)};
             const service = await serviceCollection.findOne(query);
             res.send(service);
+        })
+
+        // Post inventory in database
+        app.get('/inventory', async(req, res)=>{
+            const newInventory = req.body;
+            const result = await serviceCollection.insertOne(newInventory)
+            res.send(result)
         })
     }
     finally{}
