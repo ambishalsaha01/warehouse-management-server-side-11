@@ -34,9 +34,17 @@ async function run(){
         })
 
         // Post inventory in database
-        app.get('/inventory', async(req, res)=>{
+        app.post('/inventory', async(req, res)=>{
             const newInventory = req.body;
             const result = await serviceCollection.insertOne(newInventory)
+            res.send(result)
+        })
+
+        // Delete inventory in database
+        app.delete('/inventory/:id', async(req, res)=>{
+            const id = req.body;
+            const query = {_id: ObjectId(id)};
+            const result = await serviceCollection.deleteOne(newInventory)
             res.send(result)
         })
     }
