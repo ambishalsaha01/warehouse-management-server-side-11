@@ -42,9 +42,9 @@ async function run(){
 
         // Delete inventory in database
         app.delete('/inventory/:id', async(req, res)=>{
-            const id = req.body;
+            const id = req.params.id;
             const query = {_id: ObjectId(id)};
-            const result = await serviceCollection.deleteOne(newInventory)
+            const result = await serviceCollection.deleteOne(query)
             res.send(result)
         })
     }
