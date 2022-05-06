@@ -13,12 +13,12 @@ app.use(express.json());
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.h60cu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
-async function run(){
-    try{
+async function run() {
+    try {
         await client.connect();
         const serviceCollection = client.db("warehouse").collection("warehouseService");
         // Get inventory from database(MongoDb)
-        app.get('/inventory', async(req, res)=>{
+        app.get('/inventory', async (req, res) => {
             const query = {};
             const cursor = serviceCollection.find(query);
             const users = await cursor.toArray();
@@ -26,29 +26,45 @@ async function run(){
         })
 
         // Get single inventory data
-        app.get('/inventory/:id', async(req, res)=>{
+        app.get('/inventory/:id', async (req, res) => {
             const id = req.params.id;
-            const query = {_id: ObjectId(id)};
+            const query = { _id: ObjectId(id) };
             const service = await serviceCollection.findOne(query);
             res.send(service);
         })
 
         // Post inventory in database
-        app.post('/inventory', async(req, res)=>{
+        app.post('/inventory', async (req, res) => {
             const newInventory = req.body;
             const result = await serviceCollection.insertOne(newInventory)
             res.send(result)
         })
 
         // Delete inventory in database
-        app.delete('/inventory/:id', async(req, res)=>{
+        app.delete('/inventory/:id', async (req, res) => {
             const id = req.params.id;
-            const query = {_id: ObjectId(id)};
+            const query = { _id: ObjectId(id) };
             const result = await serviceCollection.deleteOne(query)
             res.send(result)
         })
+
+        // Put Inventory
+        app.put('/inventory/:id', async (req, res) => {
+            const id = req.params.id;
+            const updatedStock = req.body;
+            const filter = { _id: ObjectId(id) };
+            const options = { upsert: true };
+            const updatedDoc = {
+                $set: {
+                    quantity: updatedStock.totalQuantity,
+                }
+            };
+            const result = await serviceCollection.updateOne(filter, updatedDoc, options);
+            res.send(result);
+        })
+
     }
-    finally{}
+    finally { }
 }
 run().catch(console.dir)
 
