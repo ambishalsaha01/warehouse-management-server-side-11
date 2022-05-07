@@ -72,6 +72,10 @@ app.get('/', (req, res) => {
     res.send('Running warehouse inventory server');
 });
 
+app.get('/check', (req, res) => {
+    res.send('Checking successful warehouse inventory server');
+});
+
 app.listen(port, () => {
     console.log('Listening to the port', port);
 })
